@@ -1,3 +1,7 @@
+(function(){
+    emailjs.init("IZEb1_h2W9K57HF8t");
+})();
+
 const services = [
     {id: 1,  name: "Dry Cleaning",    price: 200, img: "./images/dry-cleaning.webp" },
     {id: 2,  name: "Wash & Iron",     price: 150, img: "./images/wash-iron.jpeg" },
@@ -79,6 +83,7 @@ function bookNow(){
     const name = document.getElementById("fullname").value;
     const email = document.getElementById("email").value;
     const phone = document.getElementById("phone").value;
+    const totalAmtount = document.getElementById('total-amount').innerText;
     const alert = document.getElementById("alert");
     if(!name || !email || !phone){
         alert.innerText = "Please fill in all the details!!!";
@@ -88,8 +93,22 @@ function bookNow(){
         alert.innerHTML = "Please add at least one service to your cart.";
         return;
     }
-    alert.style.color = "green";
-    alert.innerText = "Thank you for contacting. We'll get back to you soon!!";
+
+    emailjs.send("service_29s6wmi", "template_q98gk5w",{
+        customer_name: name,
+        customer_email: email,
+        customer_phone: phone,
+        order_details: cart.map(item => `${item.name} (₹ ${item.price})`).join(", "),
+        total_amount: totalAmtount,
+    })
+    .then(function(){
+        alert.style.color = "green";
+        alert.innerText = "Thank you for Booking the service we will get back to you soon!!";
+    })
+    .catch(function(error){
+        alert.style.color = "red";
+        alert.innerText = "Something went wrong. Please try again later.";
+    });
 }
 
 displayService(cur_index);
